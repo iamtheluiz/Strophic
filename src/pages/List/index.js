@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text } from 'react-native';
-import { Container } from './styles';
-import Icon from 'react-native-vector-icons/Feather';
+import { Container, MusicList } from './styles';
+import ListItem from '../../components/ListItem';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import {
   checkStoragePermissions,
   getStoragePermission,
 } from '../../utils/Permissions';
 import MusicFiles from 'react-native-get-music-files';
+import cleanupMedia from '../../utils/cleanupMedia';
 
 const List = () => {
   const [musics, setMusics] = useState([]);
@@ -19,21 +20,27 @@ const List = () => {
       await getStoragePermission();
     }
 
-    const traks = await MusicFiles.getAll({
-      id: true,
+    console.log(RNFetchBlob.fs.dirs.DocumentDir);
+    const coverFolder = RNFetchBlob.fs.dirs.DocumentDir + '/.strophic';
+
+    const tracks = await MusicFiles.getAll({
       blured: true,
       artist: true,
-      duration: true, //default : true
-      cover: true, //default : true,
+      album: true,
+      duration: true,
+      cover: true,
       title: true,
+      coverFolder,
     });
 
     // Filter "WhatsApp Audio" folder
-    const filteredList = traks.filter(
-      trak => trak.path.indexOf('WhatsApp Audio') === -1,
+    const filteredList = tracks.filter(
+      track => track.path.indexOf('WhatsApp Audio') === -1,
     );
 
-    setMusics(filteredList);
+    let media = cleanupMedia(filteredList);
+
+    setMusics(media);
   }
 
   useEffect(() => {
@@ -42,12 +49,17 @@ const List = () => {
 
   return (
     <Container>
-      <Icon name="music" size={40} color="white" onPress={getMedia} />
-      <ScrollView>
+      <MusicList>
         {musics.map((music, key) => (
-          <Text key={key}>{music.title}</Text>
+          <ListItem
+            key={key}
+            title={music.title}
+            artist={music.artist}
+            artwork={music.artwork}
+            url={music.url}
+          />
         ))}
-      </ScrollView>
+      </MusicList>
     </Container>
   );
 };

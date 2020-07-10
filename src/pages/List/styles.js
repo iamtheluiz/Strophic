@@ -7,3 +7,7 @@ export const Container = styled.View`
   justify-content: center;
   align-items: center;
 `;
+
+export const MusicList = styled.ScrollView`
+  flex: 1;
+`;

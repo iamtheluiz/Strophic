@@ -79,6 +79,8 @@ target 'Strophic' do
 
   pod 'RNReactNativeGetMusicFiles', :path => '../node_modules/react-native-get-music-files'
 
+  pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
+
   target 'StrophicTests' do
     inherit! :complete
     # Pods for testing
